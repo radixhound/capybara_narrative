@@ -32,6 +32,10 @@ module CapybaraNarrative
       @proxying ? @page.document : @page
     end
 
+    def current_url
+      @page.driver.current_url
+    end
+
     def proxying!
       @proxying = true
       yield
