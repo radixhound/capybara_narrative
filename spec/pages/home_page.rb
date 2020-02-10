@@ -1,5 +1,11 @@
 module CapybaraNarrative
   class HomePage < Page
-    with_page_url 'file://Users/chrisd/personal/capybara_narrative/test_sites/basic_html/home.html'
+    with_page_url '/home.html'
+    form_label :search, label: 'Search for something'
+    with_labels submit_button: 'Submit'
+
+    def main_heading
+      css('h1')
+    end
   end
 end

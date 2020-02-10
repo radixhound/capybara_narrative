@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe 'Checkout Flow', type: :feature do
   it 'navigates from the homepage to checkout' do
     home_page.visit do
-      expect(this.main_heading.text).to eq('Pandas Love Teapots')
+      expect(current_page.main_heading.text).to eq('Pandas Love Teapots')
       fill_form(search: 'Flowers')
       click_on :submit_button
     end
