@@ -27,5 +27,16 @@ RSpec.describe 'Checkout Flow', type: :feature do
       fill_form(quantity: 20)
       click_on :add_to_cart
     end
+
+    checkout_page do
+      expect(current_page.location).to match('example.com/checkout.html')
+      expect(current_page.main_heading.text).to eq('Checkout')
+      fill_form(
+        card_number: '41111111111111111',
+        month: 'January',
+        year: 2022,
+        cvv: 123
+      )
+    end
   end
 end
