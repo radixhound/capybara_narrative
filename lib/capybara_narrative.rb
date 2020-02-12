@@ -1,4 +1,6 @@
-require "capybara_narrative/version"
+# frozen_string_literal: true
+
+require 'capybara_narrative/version'
 require 'active_support/descendants_tracker'
 require 'active_support/core_ext'
 require 'active_support/core_ext/string'
@@ -28,16 +30,29 @@ module CapybaraNarrative
     end
   end
 
-  def self.snakecase(string)
-    string.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
-      gsub(/([a-z\d])([A-Z])/,'\1_\2').
-      tr('-', '_').
-      gsub(/\s/, '_').
-      gsub(/__+/, '_').
-      downcase
+  def self.create_page_accessor(method_name, klass)
+    define_method(method_name) do |&block|
+      page_object = if instance_variables.include?("@#{method_name}".to_sym)
+                      instance_variable_get("@#{method_name}")
+                    else
+                      instance_variable_set("@#{method_name}", klass.new)
+                    end
+      return page_object.proxy(&block) if block
+
+      page_object
+    end
   end
 
-  # When CapybaraNarrative gets included, go searching for all page
+  def self.snakecase(string)
+    string.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+          .gsub(/([a-z\d])([A-Z])/, '\1_\2')
+          .tr('-', '_')
+          .gsub(/\s/, '_')
+          .gsub(/__+/, '_')
+          .downcase
+  end
+
+  # When AutoloadPageObjects gets included, it will search for all page
   # objects and make an accessor method for them.
   #
   # For the page object HomePage this will create a method home_page
@@ -47,23 +62,40 @@ module CapybaraNarrative
   #  home_page do
   #    fill_form(first_name: 'Naruto')
   #  end
-  def self.included(base)
-    base.class_eval do
-      CapybaraNarrative::Page.descendants.each do |klass|
-        method_name = CapybaraNarrative.snakecase(klass.to_s.match(/\w*$/)[0])
-        unless method_name.ends_with?('_page')
-          raise InvalidClassName, "#{klass}: Page objects must have the Page keyword in it e.g. HomePage"
+  module AutoloadPageObjects
+    def self.included(base)
+      base.class_eval do
+        CapybaraNarrative::Page.descendants.each do |klass|
+          method_name = CapybaraNarrative.snakecase(klass.to_s.match(/\w*$/)[0])
+          unless method_name.ends_with?('_page')
+            raise InvalidClassName, "#{klass}: Page object names must have the Page keyword e.g. HomePage"
+          end
+
+          CapybaraNarrative.create_page_accessor(method_name, klass)
         end
+      end
+    end
+  end
 
-        define_method(method_name) do |&block|
-          page_object = if instance_variables.include?("@#{method_name}".to_sym)
-                          instance_variable_get("@#{method_name}")
-                        else
-                          instance_variable_set("@#{method_name}", klass.new)
-                        end
-          return page_object.proxy(&block) if block
+  # Use ManualPageObjects if you want to explicitly load your pages in a
+  # test run. For example:
+  #
+  #   RSpec.describe 'some feature', type: :feature do
+  #     load_pages home_page: 'HomePage', search_results_page: 'SearchResultsPage'
+  #
+  module ManualPageObjects
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
 
-          page_object
+    # These will be added as DSL methods onto the test class
+    module ClassMethods
+      def load_pages(pages = {})
+        pages.each do |method_name, class_name|
+          klass = CapybaraNarrative::Page.descendants.find { |descendant| descendant.to_s =~ /::#{class_name}/ }
+          raise InvalidClassName, "#{class_name}: Can't find a descendant of Page with this name" unless klass
+
+          CapybaraNarrative.create_page_accessor(method_name, klass)
         end
       end
     end

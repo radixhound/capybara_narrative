@@ -22,6 +22,7 @@ Capybara.configure { |config| config.run_server = true }
 
 RSpec.configure do |config|
   config.include CapybaraNarrative
+  config.include CapybaraNarrative::ManualPageObjects
   config.include Capybara::DSL
 
   # Enable flags like --only-failures and --next-failure

@@ -1,6 +1,13 @@
 require 'spec_helper'
 
 RSpec.describe 'Checkout Flow', type: :feature do
+  load_pages(
+    home_page: 'HomePage',
+    results_page: 'SearchResultsPage',
+    detail_page: 'DetailPage',
+    checkout_page: 'CheckoutPage'
+  )
+
   it 'navigates from the homepage to checkout' do
     home_page.visit do
       expect(current_page.main_heading.text).to eq('Pandas Love Teapots')
@@ -9,7 +16,7 @@ RSpec.describe 'Checkout Flow', type: :feature do
       click_on :submit_button
     end
 
-    search_results_page do
+    results_page do
       expect(current_page).to be_current_page
       expect(current_page.main_heading.text).to eq('Search Results')
       expect(current_page.result_titles).to include('Pink Petunia Panda', 'Red Rose Panda')
