@@ -2,8 +2,9 @@
 
 require 'capybara_narrative/version'
 require 'active_support/descendants_tracker'
-require 'active_support/core_ext'
-require 'active_support/core_ext/string'
+require 'active_support/core_ext/object'
+require 'active_support/core_ext/string/inflections'
+require 'active_support/core_ext/module/delegation'
 
 require_relative 'capybara_narrative/labels'
 require_relative 'capybara_narrative/capybara_proxy'

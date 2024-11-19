@@ -43,11 +43,11 @@ module CapybaraNarrative
     end
 
     def xpath(locator, options = {})
-      find :xpath, locator, options
+      find :xpath, locator, **options
     end
 
     def css(locator, options = {})
-      find :css, locator, options
+      find :css, locator, **options
     end
 
     def browser_action
