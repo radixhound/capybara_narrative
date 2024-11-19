@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'playwright_helper'
 
 RSpec.describe 'Checkout Flow', type: :feature do
   load_pages(
