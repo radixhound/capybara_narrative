@@ -1,12 +1,16 @@
 require 'bundler/setup'
 require 'capybara'
+require 'capybara/rspec' # or else video recording doesn't work
 require 'capybara-playwright-driver'
 require 'byebug'
+require 'fileutils'
+
+# Ensure the tmp/videos directory exists
+FileUtils.mkdir_p(File.join(File.dirname(__FILE__), '..', 'tmp', 'videos'))
 
 # export PLAYWRIGHT_CLI_VERSION=$(bundle exec ruby -e 'require "playwright"; puts Playwright::COMPATIBLE_PLAYWRIGHT_VERSION.strip')
 # yarn add -D "playwright@$PLAYWRIGHT_CLI_VERSION"
 # yarn run playwright install
-
 
 # require the page objects themselves
 PAGE_COMPONENT_FILES = %w[pages ** *.rb].freeze
@@ -22,7 +26,13 @@ test_app_root = File.expand_path(
 Capybara.register_driver :playwright do |app|
   Capybara::Playwright::Driver.new(app,
     browser_type: ENV["PLAYWRIGHT_BROWSER"]&.to_sym || :chromium,
-    headless: (false unless ENV["CI"] || ENV["PLAYWRIGHT_HEADLESS"]))
+    headless: (false unless ENV["CI"] || ENV["PLAYWRIGHT_HEADLESS"]),
+  ).tap do |driver|
+    driver.on_save_screenrecord do |video_path|
+      # Process the video, e.g., save it to a specific location or attach it to a report
+      FileUtils.mv(video_path, File.join(File.dirname(__FILE__), '..', 'tmp', 'videos', "#{RSpec.current_example.description}.webm"))
+    end
+  end
 end
 
 Capybara.app = Rack::Builder.new { run Rack::Directory.new(test_app_root) }
@@ -30,6 +40,8 @@ Capybara.configure do |config|
   config.run_server = true
   config.default_driver = :playwright
 end
+Capybara.save_path = 'tmp/capybara'
+
 
 RSpec.configure do |config|
   config.include Capybara::DSL
