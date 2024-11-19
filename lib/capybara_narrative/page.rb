@@ -83,7 +83,7 @@ module CapybaraNarrative
     # click_element
     #
     # Click an element with some attributes, pass in the attributes
-    def click_element(element_label, **options)
+    def click_element(element_label, options = {})
       if options.empty?
         send(element_label).click
       else
