@@ -5,3 +5,7 @@ gemspec
 
 gem "rake", "~> 12.0"
 gem "rspec", "~> 3.0"
+
+gem "capybara-playwright-driver", "~> 0.5.2"
+
+gem "puma", "~> 6.4"
