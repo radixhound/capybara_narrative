@@ -8,7 +8,7 @@ module CapybaraNarrative
     form_label :month, method: :select_month
     form_label :year, method: :select_year
     form_label :cvv, label: 'CVV'
-    with_labels checkout: 'Checkout'
+    map_label :checkout, 'Checkout'
 
     def main_heading
       css('h1')

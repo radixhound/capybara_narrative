@@ -12,8 +12,9 @@ module CapybaraNarrative
       form_labels[name] = LabelOptions.new(options)
     end
 
-    def with_labels(labels)
-      @labels = labels.freeze
+    def map_label(name, locator)
+      @labels ||= {}
+      @labels[name] = locator
     end
 
     def form_labels

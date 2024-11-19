@@ -5,7 +5,7 @@ module CapybaraNarrative
   class DetailPage < Page
     with_page_url '/pandas/:id'
     form_label :quantity, label: 'Quantity'
-    with_labels add_to_cart: 'Add To Cart'
+    map_label :add_to_cart, 'Add To Cart'
 
     def main_heading
       css('h1')
