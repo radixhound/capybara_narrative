@@ -8,12 +8,22 @@ module CapybaraNarrative
       @page_url
     end
 
-    def form_label(name, options = {})
-      form_labels[name] = LabelOptions.new(options)
+    # The purpose of mapping labels is to provide a solid concept that
+    # will not change regardless of the underlying text on the link or button.
+    # So if the text changes the only place that needs to be updated is the
+    # page object, not all the tests that refer to that button or link.
+    def map_label(name, locator)
+      @labels ||= {}
+      @labels[name] = locator
     end
 
-    def with_labels(labels)
-      @labels = labels.freeze
+    # The purpose of defining form labels is similar to defining labels.
+    # The elements of the form are mapped to a symbol that represents the
+    # thing to be filled in. Then if the name or identifier for the thing
+    # changes, the only thing to be updated is the page object and the tests
+    # still work.
+    def form_label(name, options = {})
+      form_labels[name] = LabelOptions.new(options)
     end
 
     def form_labels

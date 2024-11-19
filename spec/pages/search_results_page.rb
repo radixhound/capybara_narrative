@@ -3,8 +3,6 @@ module CapybaraNarrative
   class SearchResultsPage < Page
     with_page_url '/search_results.html'
 
-    with_labels result_title: { method: :result_title }
-
     def current_page?
       current_url =~ /#{page_url}$/
     end
