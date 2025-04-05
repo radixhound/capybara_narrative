@@ -71,7 +71,7 @@ module CapybaraNarrative
       base.class_eval do
         CapybaraNarrative::Page.descendants.each do |klass|
           method_name = CapybaraNarrative.snakecase(klass.to_s.match(/\w*$/)[0])
-          unless method_name.ends_with?('_page')
+          unless method_name.end_with?('_page')
             raise InvalidClassName, "#{klass}: Page object names must have the Page keyword e.g. HomePage"
           end
 
