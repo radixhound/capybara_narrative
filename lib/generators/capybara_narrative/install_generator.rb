@@ -20,7 +20,7 @@ module CapybaraNarrative
       end
 
       def show_readme
-        readme 'README' if behavior == :invoke
+        readme 'README.md' if behavior == :invoke
       end
     end
   end
