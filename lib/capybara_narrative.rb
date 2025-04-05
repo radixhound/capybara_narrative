@@ -11,6 +11,9 @@ require_relative 'capybara_narrative/capybara_proxy'
 require_relative 'capybara_narrative/page'
 require_relative 'capybara_narrative/component'
 
+# Load Rails integration if Rails is available
+require_relative 'capybara_narrative/railtie' if defined?(Rails)
+
 module CapybaraNarrative
   class Error < StandardError; end
   class InvalidClassName < NameError; end
